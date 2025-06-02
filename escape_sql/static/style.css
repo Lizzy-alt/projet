@@ -1,0 +1,5 @@
+/* Personnalisation légère, si besoin */
+.box {
+  max-width: 800px;
+  margin: auto;
+}

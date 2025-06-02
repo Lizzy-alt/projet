@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Résultat – Escape SQL{% endblock %}
+{% block content %}
+<div class="box">
+  <h2 class="subtitle">Résultat</h2>
+  <table class="table is-fullwidth is-striped">
+    <thead>
+      <tr>{% for col in rows[0].keys() %}<th>{{ col }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for cell in row.values() %}<td>{{ cell }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('game') }}" class="button">Revenir</a>
+</div>
+{% endblock %}

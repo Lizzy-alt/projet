@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- Panneau latéral avec le schéma -->
+        <div class="col-md-3">
+            <!-- Schéma de la base de données -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Schéma de la base de données</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="toggleAttributes()">
+                        <span id="toggleButtonText">Afficher attributs</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="schema-container">
+                        <!-- Le schéma sera chargé ici via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone principale -->
+        <div class="col-md-9">
+            <!-- Éditeur SQL -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Éditeur SQL</h5>
+                </div>
+                <div class="card-body">
+                    <div id="editor" style="height: 200px; width: 100%; margin-bottom: 10px;"></div>
+                    <button class="btn btn-primary" onclick="submitQuery()">Exécuter la requête</button>
+                    <button class="btn btn-secondary" onclick="clearEditor()">Effacer</button>
+                </div>
+            </div>
+
+            <!-- Résultats -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Résultats</h5>
+                </div>
+                <div class="card-body">
+                    <div id="results">
+                        <!-- Les résultats seront affichés ici -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone d'enquête -->
+            <div class="row">
+                <!-- Bloc-notes -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Bloc-notes d'enquête</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <textarea id="investigation-notes" class="form-control" rows="8" 
+                                        placeholder="Notez ici vos observations et indices..."
+                                        oninput="saveNotes()"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire du coupable -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Désigner le coupable</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="suspect-form" onsubmit="checkSuspect(event)">
+                                <div class="form-group">
+                                    <label for="suspect-name">Qui est le coupable ?</label>
+                                    <input type="text" class="form-control" id="suspect-name" 
+                                           placeholder="Nom du suspect" required>
+                                </div>
+                                <button type="submit" class="btn btn-danger w-100 mt-3">Accuser cette personne</button>
+                            </form>
+                            <div id="accusation-result" class="mt-3">
+                                <!-- Le résultat de l'accusation sera affiché ici -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script>
+    // Désactiver Ctrl+F
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'f') {
+            e.preventDefault();
+            // Optionnel : afficher un message à l'utilisateur
+            alert("La recherche avec Ctrl+F est désactivée dans cette interface.");
+        }
+    });
+
+    // Initialisation de l'éditeur Ace
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/sql");
+    editor.setOptions({
+        fontSize: "14px",
+        showPrintMargin: false,
+        showGutter: true,
+    });
+
+    // Chargement des notes sauvegardées
+    document.getElementById('investigation-notes').value = localStorage.getItem('investigation-notes') || '';
+
+    // Sauvegarde automatique des notes
+    function saveNotes() {
+        const notes = document.getElementById('investigation-notes').value;
+        localStorage.setItem('investigation-notes', notes);
+    }
+
+    // Vérification du suspect
+    function checkSuspect(event) {
+        event.preventDefault();
+        const suspectName = document.getElementById('suspect-name').value;
+        
+        fetch('/check-suspect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `suspect=${encodeURIComponent(suspectName)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            const resultDiv = document.getElementById('accusation-result');
+            if (data.correct) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">Félicitations !</h4>
+                        <p>${data.message}</p>
+                    </div>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Ce n'est pas la bonne personne...</h4>
+                        <p>${data.message}</p>
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('accusation-result').innerHTML = `
+                <div class="alert alert-danger">
+                    Une erreur est survenue : ${error}
+                </div>`;
+        });
+    }
+
+    let schemaData = null;
+    let showAttributes = false;
+
+    // Chargement du schéma
+    function loadSchema() {
+        fetch('/schema')
+            .then(response => response.json())
+            .then(data => {
+                schemaData = data;
+                renderSchema();
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    // Affichage du schéma
+    function renderSchema() {
+        let html = '';
+        for (let table in schemaData) {
+            html += `<div class="table-schema mb-3">
+                <h6 class="font-weight-bold">${table}</h6>`;
+            if (showAttributes) {
+                html += `<ul class="list-unstyled ml-3">`;
+                schemaData[table].forEach(column => {
+                    html += `<li><small>${column.name} (${column.type})</small></li>`;
+                });
+                html += `</ul>`;
+            }
+            html += `</div>`;
+        }
+        document.getElementById('schema-container').innerHTML = html;
+    }
+
+    // Toggle des attributs
+    function toggleAttributes() {
+        showAttributes = !showAttributes;
+        document.getElementById('toggleButtonText').textContent = 
+            showAttributes ? 'Masquer attributs' : 'Afficher attributs';
+        renderSchema();
+    }
+
+    // Effacer l'éditeur
+    function clearEditor() {
+        editor.setValue('');
+        editor.focus();
+    }
+
+    // Soumission de la requête
+    function submitQuery() {
+        const query = editor.getValue();
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `sql=${encodeURIComponent(query)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="alert alert-danger">
+                        ${data.error}
+                    </div>
+                `;
+            } else if (data.results) {
+                // Affichage des résultats dans un tableau
+                let html = '<div class="table-responsive"><table class="table table-striped">';
+                
+                // En-têtes
+                if (data.results.length > 0) {
+                    html += '<thead><tr>';
+                    for (let key in data.results[0]) {
+                        html += `<th>${key}</th>`;
+                    }
+                    html += '</tr></thead>';
+                }
+                
+                // Données
+                html += '<tbody>';
+                data.results.forEach(row => {
+                    html += '<tr>';
+                    for (let key in row) {
+                        html += `<td>${row[key]}</td>`;
+                    }
+                    html += '</tr>';
+                });
+                html += '</tbody></table></div>';
+                
+                document.getElementById('results').innerHTML = html;
+            } else {
+                document.getElementById('results').innerHTML = `
+                    <div class="alert alert-info">
+                        La requête a été exécutée avec succès mais n'a retourné aucun résultat.
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('results').innerHTML = `
+                <div class="alert alert-danger">
+                    Une erreur est survenue : ${error}
+                </div>
+            `;
+        });
+    }
+
+    // Chargement initial du schéma
+    loadSchema();
+</script>
+{% endblock %}

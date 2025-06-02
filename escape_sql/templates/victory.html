@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">🎉 Félicitations ! 🎉</h1>
+        <p class="lead">Vous avez résolu l'enquête avec brio !</p>
+        <hr class="my-4">
+        <p>Grâce à vos compétences en SQL, le meurtrier a été identifié et sera traduit en justice.</p>
+        <p class="mt-4">
+            <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}" role="button">Retour à l'accueil</a>
+        </p>
+    </div>
+</div>
+{% endblock %} 

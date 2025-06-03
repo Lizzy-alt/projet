@@ -1,0 +1,125 @@
+@startuml SQL Murder Mystery Database Schema
+
+' Style des entités
+skinparam class {
+    BackgroundColor LightBlue
+    ArrowColor Black
+    BorderColor DarkBlue
+}
+
+' Schéma relationnel
+entity "users" as users {
+    *id : INTEGER <<PK>>
+    --
+    *email : TEXT <<UNIQUE>>
+    *username : TEXT <<UNIQUE>>
+    *password_hash : TEXT
+    req_count : INTEGER = 0
+    resolve_time : INTEGER = NULL
+}
+
+entity "crime_scene_report" as csr {
+    *id : INTEGER <<PK>>
+    --
+    *date : TEXT
+    *type : TEXT
+    *description : TEXT
+    *location : TEXT
+}
+
+entity "person" as person {
+    *id : INTEGER <<PK>>
+    --
+    *name : TEXT
+    age : INTEGER
+    address : TEXT
+    occupation : TEXT
+    phone_number : TEXT
+}
+
+entity "interview" as interview {
+    *id : INTEGER <<PK>>
+    --
+    *person_id : INTEGER <<FK>>
+    *date : TEXT
+    *transcript : TEXT
+}
+
+entity "evidence" as evidence {
+    *id : INTEGER <<PK>>
+    --
+    *type : TEXT
+    *description : TEXT
+    *location_found : TEXT
+    *date_found : TEXT
+}
+
+entity "relationship" as rel {
+    *id : INTEGER <<PK>>
+    --
+    *person1_id : INTEGER <<FK>>
+    *person2_id : INTEGER <<FK>>
+    *relationship_type : TEXT
+}
+
+entity "movement" as movement {
+    *id : INTEGER <<PK>>
+    --
+    *person_id : INTEGER <<FK>>
+    *date : TEXT
+    *location : TEXT
+}
+
+entity "hint" as hint {
+    *id : INTEGER <<PK>>
+    --
+    *level : INTEGER
+    *description : TEXT
+    *query_example : TEXT
+    *explanation : TEXT
+}
+
+' Relations
+interview }o--|| person : "est interrogé"
+rel }o--|| person : "personne 1"
+rel }o--|| person : "personne 2"
+movement }o--|| person : "se déplace"
+
+' Légende
+legend right
+    Légende
+    ==
+    * : Champ obligatoire
+    PK : Clé primaire
+    FK : Clé étrangère
+    |o--|| : Relation 0..n vers 1
+    ||--|| : Relation 1 vers 1
+end legend
+
+' Notes métier
+note right of users
+    Gestion des joueurs et
+    de leurs performances
+end note
+
+note right of person
+    Personnes impliquées
+    dans l'affaire
+end note
+
+note right of evidence
+    Preuves physiques
+    trouvées sur la scène
+end note
+
+note right of movement
+    Déplacements des
+    suspects
+end note
+
+note right of hint
+    Système d'aide
+    progressive
+end note
+
+@enduml 

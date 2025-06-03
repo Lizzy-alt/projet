@@ -1,0 +1,127 @@
+@startuml EscapeSQL Application Architecture
+
+' Style des entités
+skinparam {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor DarkBlue
+    PackageBackgroundColor LightGrey
+    ComponentBackgroundColor LightBlue
+}
+
+' Package Flask Application
+package "Flask Application" {
+    class FlaskApp {
+        + secret_key: String
+        + config: Dict
+        --
+        + init_db()
+        + before_request()
+    }
+
+    ' Modèles
+    class GameSession {
+        - db_path: String
+        + execute(query: String): List
+        + execute_script(script: String): void
+    }
+
+    ' Contrôleurs (Routes)
+    class Routes {
+        + index()
+        + game()
+        + signup()
+        + login()
+        + logout()
+        + get_user_data()
+        + record_game_stats()
+        + get_leaderboard()
+        + submit()
+        + schema()
+        + check_suspect()
+    }
+
+    ' Décorateurs
+    class Decorators {
+        + login_required(f)
+    }
+}
+
+' Package Templates
+package "Templates" {
+    component base.html {
+        + navigation
+        + auth_modals
+        + leaderboard_modal
+    }
+    
+    component index.html {
+        + story
+        + auth_buttons
+    }
+    
+    component game.html {
+        + schema_display
+        + query_editor
+        + results_table
+    }
+}
+
+' Package Static
+package "Static" {
+    folder "CSS" {
+        [custom.css]
+    }
+    folder "JavaScript" {
+        [auth.js]
+        [game.js]
+    }
+    folder "Images" {
+        [logo-enac.jpg]
+    }
+}
+
+' Package Database
+package "Database" {
+    database "SQLite" {
+        [murder_mystery.db]
+    }
+    [schema.sql]
+    [initial_data.sql]
+}
+
+' Relations
+FlaskApp --> Routes : uses
+Routes --> GameSession : uses
+Routes --> Decorators : uses
+Routes ..> base.html : renders
+Routes ..> index.html : renders
+Routes ..> game.html : renders
+base.html <|-- index.html : extends
+base.html <|-- game.html : extends
+GameSession --> "SQLite" : queries
+FlaskApp ..> "schema.sql" : initializes
+FlaskApp ..> "initial_data.sql" : loads
+
+' Notes
+note right of FlaskApp
+  Point d'entrée principal
+  de l'application
+end note
+
+note right of GameSession
+  Gère les interactions
+  avec la base de données
+end note
+
+note bottom of Routes
+  Gère toutes les routes HTTP
+  et la logique métier
+end note
+
+note right of base.html
+  Template de base avec
+  la structure commune
+end note
+
+@enduml 

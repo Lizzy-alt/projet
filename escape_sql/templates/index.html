@@ -4,11 +4,11 @@
 <div class="container mt-5">
     <div class="jumbotron">
         <h1 class="display-4">Escape-SQL</h1>
-        <p class="lead">3 h 42. Une alarme déchire le silence sur le campus ENAC – Montpellier – avril 2025. Quelques heures plus tard, les infos confirment que toute la flotte de l’ESMA Airway Aviation stationnée temporairement sur l’aérodrome a été détruite par un incendie. Aucune victime, mais les appareils sont perdus. Sabotage ? Accident ? Vengeance ? Officiellement, l’enquête débute. Officieusement, une rumeur enfle : ce n’était pas un hasard. En tant que détective, vous devez utiliser vos compétences en SQL pour résoudre l'affaire.</p>
+        <p class="lead">3 h 42. Une alarme déchire le silence sur le campus ENAC – Montpellier – avril 2025. Quelques heures plus tard, les infos confirment que toute la flotte de l'ESMA Airway Aviation stationnée temporairement sur l'aérodrome a été détruite par un incendie. Aucune victime, mais les appareils sont perdus. Sabotage ? Accident ? Vengeance ? Officiellement, l'enquête débute. Officieusement, une rumeur enfle : ce n'était pas un hasard. En tant que détective, vous devez utiliser vos compétences en SQL pour résoudre l'affaire.</p>
         <hr class="my-4">
         <p>Trois jours plus tard, tu reçois un mail sans signature, sans adresse, sans objet. Juste une pièce jointe et une phrase :
             « Celui ou celle qui cherche la vérité devra la reconstruire. À travers les logs, les plans, les emplois du temps… Tu es assez intelligent·e, non ? »
-            À l’ouverture de la pièce jointe, tu découvres une base de données incomplète et fragmentée, comme si quelqu’un avait voulu l’effacer. Mais pas complètement... en voici les fragments :</p>
+            À l'ouverture de la pièce jointe, tu découvres une base de données incomplète et fragmentée, comme si quelqu'un avait voulu l'effacer. Mais pas complètement... en voici les fragments :</p>
         <ul>
             <li>Les rapports de la scène de crime</li>
             <li>Les témoignages des témoins</li>
@@ -17,7 +17,32 @@
             <li>Les mouvements suspects</li>
         </ul>
         <p>Utilisez vos compétences en SQL pour interroger la base de données et trouver le(s) coupable(s) !</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('game') }}" role="button">Commencer l'enquête</a>
+        <div class="start-buttons">
+            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#loginModal">Se connecter pour commencer</button>
+            <button class="btn btn-outline-primary btn-lg ml-2" data-toggle="modal" data-target="#signupModal">Créer un compte pour jouer</button>
+        </div>
+        <a id="startGame" class="btn btn-primary btn-lg d-none" href="{{ url_for('game') }}" role="button">Commencer l'enquête</a>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Mise à jour des boutons en fonction de l'état de connexion
+    function updateStartButtons(isLoggedIn) {
+        if (isLoggedIn) {
+            $('.start-buttons').addClass('d-none');
+            $('#startGame').removeClass('d-none');
+        } else {
+            $('.start-buttons').removeClass('d-none');
+            $('#startGame').addClass('d-none');
+        }
+    }
+
+    // Vérification initiale de l'état de connexion
+    $.get('/user/data')
+        .done(function(data) {
+            updateStartButtons(!!data.username);
+        });
+</script>
 {% endblock %}

@@ -70,4 +70,10 @@ WHERE m.date BETWEEN ''2024-03-15 21:00'' AND ''2024-03-15 23:00''',
 
 (5, 'Examinez les preuves trouvées sur la scène de crime.',
 'SELECT * FROM evidence WHERE date_found = ''2024-03-15''',
-'Les preuves physiques sont cruciales pour résoudre l''affaire.'); 
+'Les preuves physiques sont cruciales pour résoudre l''affaire.');
+
+-- Insertion des utilisateurs de test
+INSERT INTO users (email, username, password_hash, req_count, resolve_time) VALUES 
+('test@test.com', 'testuser', 'pbkdf2:sha256:260000$7JFdVgAw$d5b1b7a1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1', 10, 300),
+('alice@example.com', 'alice123', 'pbkdf2:sha256:260000$7JFdVgAw$d5b1b7a1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1', 15, 400),
+('bob@example.com', 'bob456', 'pbkdf2:sha256:260000$7JFdVgAw$d5b1b7a1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1', 20, 500); 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESCAPE-SQL - Accueil</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        .navbar.is-enac-blue {
+            background-color: #004494;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item,
+        .navbar.is-enac-blue .navbar-start .navbar-item {
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-start .navbar-item:hover {
+            background-color: #003370 !important;
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item:hover {
+            background-color: transparent !important;
+        }
+        .footer.is-enac {
+            background-color: #004494;
+            color: white;
+            padding: 2rem 1.5rem;
+        }
+        .footer.is-enac a {
+            color: white;
+            text-decoration: none;
+        }
+        .footer.is-enac a:hover {
+            color: #f0f0f0;
+            text-decoration: underline;
+        }
+        .enac-logo {
+            height: 110px;
+            margin-left: 50px;
+        }
+        .db-icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-enac-blue" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <span class="navbar-item">
+                <span class="icon db-icon">
+                    <i class="fas fa-database"></i>
+                </span>
+                <span class="has-text-weight-bold is-size-3">ESCAPE-SQL</span>
+            </span>
+        </div>
+        <div class="navbar-start">
+            <a class="navbar-item" href="/">
+                Accueil
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="content has-text-centered mb-6">
+                        <h1 class="title is-2">Bienvenue sur ESCAPE-SQL</h1>
+                        <h2 class="subtitle is-4">
+                            Apprenez et maîtrisez SQL dans une énigme intrigante !
+                        </h2>
+                        <p class="is-size-5">
+                            Qui a brûlé les avions ?<br>
+                            Campus ENAC – Montpellier – 5 Avril 2025 3h42. Une alarme déchire le silence.<br>
+                            Quelques heures plus tard, les infos tombent : La flotte de l'ESMA Airway Aviation, stationnée temporairement sur l'aérodrome, a été totalement détruite par un incendie. Aucune victime. <br>
+                            Mais les appareils sont perdus. Un sabotage ? Un accident ? Une vengeance ?<br>
+                            Officiellement, l'enquête débute. Officieusement, une rumeur enfle sur le campus ENAC :<br>
+                            Ce n'était pas un hasard. 3 jours plus tard, tu reçois un mail. C'est le début de l'enquête.<br>
+                        </p>
+                    </div>
+
+                    <div class="buttons is-centered">
+                        <a href="/login" class="button is-primary is-large">
+                            <span class="icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </span>
+                            <span>Connexion</span>
+                        </a>
+                        <a href="/signup" class="button is-info is-large">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>Créer un compte</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer is-enac">
+        <div class="container">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <h5 class="title is-5"><a href="https://www.enac.fr" target="_blank">École Nationale de l'Aviation Civile</a></h5>
+                    <p class="mb-2">
+                        7 Avenue Édouard Belin, 31400 Toulouse<br>
+                        Tél : +33 (0)5 62 17 40 00
+                    </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <a href="https://www.enac.fr" target="_blank">
+                        <img src="{{ url_for('static', filename='images/logo_enac.png') }}" alt="Logo ENAC" class="enac-logo">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Font Awesome pour les icônes -->
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+</body>
+</html> 

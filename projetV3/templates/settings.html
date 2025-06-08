@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESCAPE-SQL - Paramètres</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        .navbar.is-enac-blue {
+            background-color: #004F94;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item,
+        .navbar.is-enac-blue .navbar-start .navbar-item,
+        .navbar.is-enac-blue .navbar-end .navbar-item {
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-start .navbar-item:hover,
+        .navbar.is-enac-blue .navbar-end .navbar-item:hover {
+            background-color: #003d73 !important;
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item:hover {
+            background-color: transparent !important;
+        }
+        .user-welcome {
+            font-weight: 500;
+            padding-right: 1rem;
+        }
+        .delete-account {
+            border-top: 1px solid #dbdbdb;
+            margin-top: 2rem;
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-enac-blue" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <span class="navbar-item">
+                <span class="has-text-weight-bold is-size-3">ESCAPE-SQL</span>
+            </span>
+        </div>
+        <div class="navbar-start">
+            <a class="navbar-item" href="{{ url_for('query') }}">
+                Retour à SQL
+            </a>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item user-welcome">
+                Bienvenue, {{ session['username'] }}
+            </div>
+            <div class="navbar-item">
+                <a href="{{ url_for('settings') }}" class="button is-light">
+                    <span class="icon">
+                        <i class="fas fa-cog"></i>
+                    </span>
+                    <span>Paramètres</span>
+                </a>
+            </div>
+            <div class="navbar-item">
+                <a href="{{ url_for('logout') }}" class="button is-light">
+                    <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-6">
+                    <h1 class="title">Paramètres du compte</h1>
+
+                    {% if success %}
+                        <div class="notification is-success">
+                            {{ success }}
+                        </div>
+                    {% endif %}
+
+                    {% if error %}
+                        <div class="notification is-danger">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <div class="box">
+                        <h2 class="title is-4">Modifier vos informations</h2>
+                        <form method="post" action="{{ url_for('update_account') }}">
+                            <div class="field">
+                                <label class="label">Email</label>
+                                <div class="control">
+                                    <input class="input" type="email" name="mail" value="{{ session['mail'] }}" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Nom d'utilisateur</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="username" value="{{ session['username'] }}" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                                <div class="control">
+                                    <input class="input" type="password" name="new_password">
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Mot de passe actuel (requis pour confirmer les changements)</label>
+                                <div class="control">
+                                    <input class="input" type="password" name="current_password" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" class="button is-primary">
+                                        Sauvegarder les modifications
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="delete-account">
+                            <h3 class="title is-5 has-text-danger">Zone dangereuse</h3>
+                            <form method="post" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.');">
+                                <div class="field">
+                                    <label class="label">Mot de passe (requis pour confirmer la suppression)</label>
+                                    <div class="control">
+                                        <input class="input" type="password" name="password" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-danger">
+                                            <span class="icon">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </span>
+                                            <span>Supprimer mon compte</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Font Awesome pour les icônes -->
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+</body>
+</html> 

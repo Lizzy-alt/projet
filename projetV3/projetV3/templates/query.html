@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESCAPE-SQL - Requêtes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        .table-cell-text-align-center td,
+        .table-cell-text-align-center th {
+            text-align: center !important;
+        }
+        .navbar.is-enac-blue {
+            background-color: #004494;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item,
+        .navbar.is-enac-blue .navbar-start .navbar-item {
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-start .navbar-item:hover {
+            background-color: #003370 !important;
+            color: white;
+        }
+        .navbar.is-enac-blue .navbar-brand .navbar-item:hover {
+            background-color: transparent !important;
+        }
+        .user-welcome {
+            font-weight: 500;
+            padding-right: 1rem;
+            color: white;
+        }
+        .footer.is-enac {
+            background-color: #004494;
+            color: white;
+            padding: 2rem 1.5rem;
+        }
+        .footer.is-enac a {
+            color: white;
+            text-decoration: none;
+        }
+        .footer.is-enac a:hover {
+            color: #f0f0f0;
+            text-decoration: underline;
+        }
+        .enac-logo {
+            height: 110px;
+            margin-left: 50px;
+        }
+        .db-icon {
+            margin-right: 10px;
+        }
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #004494;
+        }
+        .mystery-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .culprit-answer {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .success-message {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724 !important;
+        }
+        .error-message {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24 !important;
+        }
+        .tableau-image {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid #004494;
+            display: block;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-enac-blue" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <span class="navbar-item">
+                <span class="icon db-icon">
+                    <i class="fas fa-database"></i>
+                </span>
+                <span class="has-text-weight-bold is-size-3">ESCAPE-SQL</span>
+            </span>
+        </div>
+        <div class="navbar-start">
+            <a class="navbar-item" href="/">
+                Accueil
+            </a>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item user-welcome">
+                Bienvenue, {{ session['username'] }}
+            </div>
+            <div class="navbar-item">
+                <a href="{{ url_for('settings') }}" class="button is-light">
+                    <span class="icon">
+                        <i class="fas fa-cog"></i>
+                    </span>
+                    <span>Paramètres</span>
+                </a>
+            </div>
+            <div class="navbar-item">
+                <a href="{{ url_for('logout') }}" class="button is-light">
+                    <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <!-- Section d'introduction avec texte à gauche et image à droite -->
+            <div class="columns mb-6">
+                <div class="column is-8">
+                    <div class="story-text">
+                        <p><strong>Campus ENAC – Montpellier – 5 Avril 2025 3h42.</strong> Une alarme déchire le silence.</p>
+                        <p>Quelques heures plus tard, les infos tombent : La flotte de l'ESMA Airway Aviation, stationnée temporairement sur l'aérodrome, a été totalement détruite par un incendie. Aucune victime.</p>
+                        <p>Mais les appareils sont perdus. Un sabotage ? Un accident ? Une vengeance ?</p>
+                        <p>Officiellement, l'enquête débute. Officieusement, une rumeur enfle sur le campus ENAC :</p>
+                        <p><em>Ce n'était pas un hasard. 3 jours plus tard, tu reçois un mail. C'est le début de l'enquête.</em></p>
+                    </div>
+                    
+                    <!-- Section des requêtes SQL -->
+                    <div class="mt-4">
+                        <form method="post" class="mb-5">
+                            <!-- Bloc-notes intégré dans le formulaire -->
+                            <div class="box mb-4" style="background-color: #fffef7; border-left: 4px solid #f39c12; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div class="content">
+                                    <div class="level is-mobile mb-3">
+                                        <div class="level-left">
+                                            <div class="level-item">
+                                                <span class="icon is-medium" style="color: #f39c12; margin-right: 0.5rem;">
+                                                    <i class="fas fa-sticky-note fa-lg"></i>
+                                                </span>
+                                                <h5 class="title is-5" style="color: #d35400; margin-bottom: 0;">Bloc-notes d'enquête</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="border: 1px dashed #ddd; padding: 0.5rem; background-color: #fefefe; border-radius: 4px;">
+                                        <textarea name="notes" class="textarea" rows="4" placeholder="Prenez vos notes ici pendant l'enquête..." style="border: none; box-shadow: none; background-color: transparent; resize: vertical; font-family: inherit;">{{ notes }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="field">
+                                <label class="label">Entrez votre requête SQL :</label>
+                                <div class="control">
+                                    <textarea name="sql" class="textarea" rows="4" placeholder="Entrez votre requête SQL ici">{{ requete }}</textarea>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" class="button is-primary">
+                                        <span class="icon">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <span>Enquêter</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        {% if erreur %}
+                            <div class="notification is-danger">
+                                <button class="delete"></button>
+                                {{ erreur }}
+                            </div>
+                        {% endif %}
+
+                        {% if colonnes %}
+                            <div class="table-container">
+                                <table class="table is-bordered table-cell-text-align-center is-fullwidth">
+                                    <thead>
+                                        <tr>
+                                            {% for col in colonnes %}
+                                                <th>{{ col }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ligne in lignes %}
+                                            <tr>
+                                                {% for valeur in ligne %}
+                                                    <td>{{ valeur }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <figure class="image">
+                        <img src="{{ url_for('static', filename='images/Photo_avion.jpg') }}" alt="Scène de crime - Avions détruits" class="mystery-image">
+                    </figure>
+                    
+                    <!-- Section "Qui est le coupable" -->
+                    <div class="culprit-answer mt-4">
+                        <h2 class="title is-4">Qui est le coupable ?</h2>
+                        
+                        {% if session.get('culprit_result') %}
+                            {% if session.get('culprit_result') == 'success' %}
+                                <div class="notification success-message">
+                                    <span class="icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                    <strong>Bravo !</strong> Vous avez trouvé le coupable !
+                                </div>
+                            {% elif session.get('culprit_result') == 'error' %}
+                                <div class="notification error-message">
+                                    <span class="icon">
+                                        <i class="fas fa-times-circle"></i>
+                                    </span>
+                                    <strong>Faux !</strong> Ce n'est pas le bon coupable. Continuez votre enquête...
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        <form method="post" action="{{ url_for('check_culprit') }}">
+                            <div class="field">
+                                <label class="label">Nom du coupable :</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="culprit_name" placeholder="Entrez le nom du coupable" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" class="button is-warning is-fullwidth">
+                                        <span class="icon">
+                                            <i class="fas fa-gavel"></i>
+                                        </span>
+                                        <span>Accuser</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section du diagramme UML -->
+            <div class="columns">
+                <div class="column is-8">
+                    <!-- Espace vide pour équilibrer la mise en page -->
+                </div>
+                
+                <!-- Partie diagramme UML à droite -->
+                <div class="column is-4">
+                    <!-- Bouton pour afficher/masquer le diagramme UML -->
+                    <div class="field">
+                        <div class="control">
+                            <button type="button" class="button is-info is-medium is-fullwidth" onclick="toggleTableau()">
+                                <span class="icon">
+                                    <i class="fas fa-table"></i>
+                                </span>
+                                <span id="tableau-btn-text">Afficher le diagramme UML</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Image du diagramme cachée par défaut -->
+                    <div id="tableau-container" style="display: none;" class="mt-3">
+                        <figure class="image">
+                            <img src="{{ url_for('static', filename='images/uml.png') }}" alt="Diagramme UML" class="tableau-image">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer is-enac">
+        <div class="container">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <h5 class="title is-5"><a href="https://www.enac.fr" target="_blank">École Nationale de l'Aviation Civile</a></h5>
+                    <p class="mb-2">
+                        7 Avenue Édouard Belin, 31400 Toulouse<br>
+                        Tél : +33 (0)5 62 17 40 00
+                    </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <a href="https://www.enac.fr" target="_blank">
+                        <img src="{{ url_for('static', filename='images/logo_enac.png') }}" alt="Logo ENAC" class="enac-logo">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Font Awesome pour les icônes -->
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <!-- javascript pour afficher/masquer le tableau IA -->
+    <script>
+        function toggleTableau() {
+            const container = document.getElementById('tableau-container');
+            const btnText = document.getElementById('tableau-btn-text');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btnText.textContent = 'Masquer le diagramme UML';
+            } else {
+                container.style.display = 'none';
+                btnText.textContent = 'Afficher le diagramme UML';
+            }
+        }
+
+        // Bloquer Ctrl+F (recherche dans la page)
+        document.addEventListener('keydown', function(event) {
+            // Bloquer Ctrl+F (Windows/Linux) et Cmd+F (Mac)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+                event.preventDefault();
+                event.stopPropagation();
+                alert('La fonction de recherche est désactivée pour préserver l\'intégrité de l\'enquête.');
+                return false;
+            }
+        });
+        // Désactiver le menu contextuel pour empêcher l'accès à "Rechercher"
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
